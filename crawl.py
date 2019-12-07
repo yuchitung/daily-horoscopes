@@ -4,8 +4,11 @@ from bs4 import BeautifulSoup
 import requests
 import json
 import time
+from google.cloud import storage
+from storage import upload_file
 
 def crawl():
+    
     url = 'http://astro.click108.com.tw/daily_10.php?iAstro='
     horoscopes = ['牡羊座','金牛座','雙子座','巨蟹座','獅子座','處女座','天秤座','天蠍座','射手座','魔羯座','水瓶座','雙魚座']
 
@@ -18,10 +21,12 @@ def crawl():
             daily_horoscopes.update({
                 horoscope : format(soup)
             })
-
-    with open('daily-horoscopes.json', 'w') as outfile:
-        json.dump(daily_horoscopes, outfile,ensure_ascii=False)
-
+    
+    file_stream = json.dumps(daily_horoscopes, ensure_ascii=False)
+    filename = 'daily-horoscopes.json'
+    content_type = 'application/json'
+    upload_file(file_stream, filename, content_type)
+    
     return jsonify(daily_horoscopes)
 
 def format(soup):

@@ -4,19 +4,15 @@ from bs4 import BeautifulSoup
 import os
 import json
 from crawl import crawl as crawl_horosopes
+from storage import download_file
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 app.config['JSON_AS_ASCII'] = False
 
 @app.route('/',methods=['GET'])
 def get():
-    filepath = 'daily-horoscopes.json'
-    if os.path.isfile(filepath):
-        with open('daily-horoscopes.json') as json_file:
-            data = json.load(json_file)
-    else:
-        data = 'data not found'
-    return jsonify(data)
+    return json.loads(download_file())
 
 @app.route('/crawl',methods=['GET'])
 def crawl():
