@@ -1,22 +1,16 @@
-from flask import Flask
-from flask import jsonify
-from bs4 import BeautifulSoup
-import os
+from google.cloud import storage
 import json
-from crawl import crawl as crawl_horosopes
-from storage import download_file
+    
+def download_file(request):
+    client = _get_storage_client()
+    bucket = client.bucket('daily-horoscopes')
+    blob = bucket.get_blob('daily-horoscopes.json')
+    if blob: 
+        json_data_string = blob.download_as_string()
+        return json_data_string
+    else:
+        return {}
+    
 
-app = Flask(__name__)
-app.config.from_pyfile('config.py')
-app.config['JSON_AS_ASCII'] = False
-
-@app.route('/',methods=['GET'])
-def get():
-    return json.loads(download_file())
-
-@app.route('/crawl',methods=['GET'])
-def crawl():
-    return crawl_horosopes()
-
-if __name__ == "__main__":
-    app.run()
+def _get_storage_client():
+    return storage.Client(project='daily-horoscopes')
